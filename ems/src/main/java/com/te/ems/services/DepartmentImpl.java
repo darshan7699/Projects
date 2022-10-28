@@ -10,7 +10,7 @@ import com.te.ems.repository.DepartmentRepo;
 public class DepartmentImpl implements DepartmentInterface {
 	
 	@Autowired
-	DepartmentRepo departmentRepo;
+	private DepartmentRepo departmentRepo;
 
 	@Override
 	public Department add(Department department) {

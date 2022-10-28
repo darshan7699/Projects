@@ -1,10 +1,19 @@
 package com.te.ems.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import com.te.ems.controlleradviser.DataNotFoundexception;
@@ -14,16 +23,31 @@ import com.te.ems.entity.Employee;
 import com.te.ems.repository.EmployeeRepo;
 
 @Service
-public class EmployeeImpl implements EmployeeInterface {
+@Component
+public class EmployeeImpl implements EmployeeInterface, UserDetailsService {
 
 	@Autowired
 	EmployeeRepo employeeRepo;
+
+	@Autowired
+	PasswordEncoder encoder;
+
+	@Autowired
+	private JavaMailSender javaMailSender;
 
 	@Override
 	public Employee add(EmployeeDto dto) {
 		try {
 			Employee employee = Employee.builder().build();
 			BeanUtils.copyProperties(dto, employee);
+			/*employee.setPassword(encoder.encode(employee.getPassword()));
+			SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
+			simpleMailMessage.setTo(employee.getMail());
+			simpleMailMessage.setFrom("dsw7699@gmail.com");
+			simpleMailMessage.setSubject("Registration Successfull!!");
+			simpleMailMessage.setText("You Have Successfully Registered.\n Username :" + employee.getMail()
+					+ "\n Password :" + employee.getPassword());
+			javaMailSender.send(simpleMailMessage);*/
 			return employeeRepo.save(employee);
 		} catch (Exception e) {
 			throw e;
@@ -94,6 +118,12 @@ public class EmployeeImpl implements EmployeeInterface {
 		} catch (Exception e) {
 			throw e;
 		}
+	}
+
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		Employee user = employeeRepo.findByMail(username);
+		return new User(user.getMail(), user.getPassword(), new ArrayList<>());
 	}
 
 }

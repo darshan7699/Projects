@@ -28,6 +28,7 @@ public class Employee {
 	private String firstName;
 	private String lastName;
 	private String mail;
+	private String password;
 	private long phoneNo;
 	private int age;
 	private double sal;
@@ -46,6 +47,11 @@ public class Employee {
 	@JoinColumn(name = "id")
 	@OneToMany(cascade = CascadeType.ALL)
 	private List<Department>department;
+
+	public Object thenReturn(Employee employee) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 	
 
